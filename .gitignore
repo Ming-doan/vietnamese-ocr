@@ -12,3 +12,4 @@ wheels/
 
 # Not push the test .jpg files, because document are confidential
 test/*.jpg
+media/

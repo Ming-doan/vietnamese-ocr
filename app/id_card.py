@@ -33,9 +33,9 @@ async def predict_id_card(front: UploadFile = File(...), back: UploadFile = File
         back_bboxs = await detect_bounding_boxs(back_image)
         if not is_production_mode():
             response_data["trace"]["all_front_bboxs"] = Media.save_pil_image(
-                visualize_bbox(front_image, front_bboxs))
+                await visualize_bbox(front_image, front_bboxs))
             response_data["trace"]["all_back_bboxs"] = Media.save_pil_image(
-                visualize_bbox(back_image, back_bboxs))
+                await visualize_bbox(back_image, back_bboxs))
 
         # Read template
         front_template = load_template("cccd_front")
@@ -45,9 +45,9 @@ async def predict_id_card(front: UploadFile = File(...), back: UploadFile = File
         filter_front_bboxs = await filter_bbox(front_bboxs, front_template, front_image.width, front_image.height)
         filter_back_bboxs = await filter_bbox(back_bboxs, back_template, back_image.width, back_image.height)
         if not is_production_mode():
-            response_data["trace"]["filter_front_bboxs"] = Media.save_pil_image(visualize_bbox(
+            response_data["trace"]["filter_front_bboxs"] = Media.save_pil_image(await visualize_bbox(
                 front_image, list(filter_front_bboxs.values()), list(filter_front_bboxs.keys())))
-            response_data["trace"]["filter_back_bboxs"] = Media.save_pil_image(visualize_bbox(
+            response_data["trace"]["filter_back_bboxs"] = Media.save_pil_image(await visualize_bbox(
                 back_image, list(filter_back_bboxs.values()), list(filter_back_bboxs.keys())))
 
         # Crop images
@@ -77,7 +77,7 @@ async def predict_id_card(front: UploadFile = File(...), back: UploadFile = File
     except Exception as e:
         response_error = str(e)
 
-    if not is_production_mode():
+    if is_production_mode():
         del response_data["trace"]
 
     return get_response_format(response_data, response_error)

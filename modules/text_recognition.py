@@ -11,4 +11,5 @@ async def predict_data(image: Image.Image, regex: str | None = None) -> str | No
             return _match.group()
         else:
             return None
+    print(result)
     return result
